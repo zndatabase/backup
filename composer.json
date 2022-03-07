@@ -1,0 +1,21 @@
+{
+  "name": "zndatabase/backup",
+  "type": "extension",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "ZnDeveloper",
+      "email": "zndev@ya.ru"
+    }
+  ],
+  "minimum-stability": "dev",
+  "require": {
+    
+  },
+  "autoload": {
+    "psr-4": {
+      "ZnDatabase\\Backup\\": "src",
+      "ZnDatabase\\Backup\\Tests\\": "tests"
+    }
+  }
+}
