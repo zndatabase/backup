@@ -52,9 +52,9 @@ class DumpRestoreCommand extends Command
     }
 
     /**
-     * @return \ZnLib\Db\Capsule\Manager
+     * @return \ZnDatabase\Eloquent\Domain\Capsule\Manager
      */
-    public function getCapsule(): \ZnLib\Db\Capsule\Manager
+    public function getCapsule(): \ZnDatabase\Eloquent\Domain\Capsule\Manager
     {
         return $this->capsule;
     }
