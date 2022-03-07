@@ -11,7 +11,7 @@ use ZnCore\Base\Helpers\StringHelper;
 use ZnCore\Base\Legacy\Yii\Helpers\FileHelper;
 use ZnCore\Base\Libs\DotEnv\DotEnv;
 use ZnDatabase\Base\Domain\Entities\TableEntity;
-use ZnLib\Db\Facades\DbFacade;
+use ZnDatabase\Base\Domain\Facades\DbFacade;
 use ZnDatabase\Eloquent\Domain\Factories\ManagerFactory;
 use ZnLib\Fixture\Domain\Repositories\DbRepository;
 use ZnDatabase\Base\Domain\Repositories\Eloquent\SchemaRepository;

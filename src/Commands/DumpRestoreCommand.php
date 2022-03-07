@@ -14,7 +14,7 @@ use ZnCore\Base\Libs\App\Helpers\ContainerHelper;
 use ZnCore\Base\Libs\DotEnv\DotEnv;
 use ZnCore\Domain\Helpers\EntityHelper;
 use ZnLib\Console\Symfony4\Question\ChoiceQuestion;
-use ZnLib\Db\Facades\DbFacade;
+use ZnDatabase\Base\Domain\Facades\DbFacade;
 use ZnDatabase\Eloquent\Domain\Factories\ManagerFactory;
 use ZnDatabase\Base\Domain\Libs\Dependency;
 use ZnLib\Fixture\Domain\Repositories\DbRepository;
