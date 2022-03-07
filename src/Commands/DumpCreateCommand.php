@@ -13,7 +13,7 @@ use ZnCore\Base\Libs\DotEnv\DotEnv;
 use ZnDatabase\Base\Domain\Entities\TableEntity;
 use ZnDatabase\Base\Domain\Facades\DbFacade;
 use ZnDatabase\Eloquent\Domain\Factories\ManagerFactory;
-use ZnLib\Fixture\Domain\Repositories\DbRepository;
+use ZnDatabase\Fixture\Domain\Repositories\DbRepository;
 use ZnDatabase\Base\Domain\Repositories\Eloquent\SchemaRepository;
 use ZnSandbox\Sandbox\Office\Domain\Libs\Zip;
 

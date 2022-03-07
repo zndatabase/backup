@@ -17,7 +17,7 @@ use ZnLib\Console\Symfony4\Question\ChoiceQuestion;
 use ZnDatabase\Base\Domain\Facades\DbFacade;
 use ZnDatabase\Eloquent\Domain\Factories\ManagerFactory;
 use ZnDatabase\Base\Domain\Libs\Dependency;
-use ZnLib\Fixture\Domain\Repositories\DbRepository;
+use ZnDatabase\Fixture\Domain\Repositories\DbRepository;
 use ZnDatabase\Base\Domain\Repositories\Eloquent\SchemaRepository;
 use ZnSandbox\Sandbox\Office\Domain\Libs\Zip;
 
