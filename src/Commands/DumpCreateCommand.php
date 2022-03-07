@@ -10,11 +10,11 @@ use Symfony\Component\Console\Question\Question;
 use ZnCore\Base\Helpers\StringHelper;
 use ZnCore\Base\Legacy\Yii\Helpers\FileHelper;
 use ZnCore\Base\Libs\DotEnv\DotEnv;
-use ZnLib\Db\Entities\TableEntity;
+use ZnDatabase\Base\Domain\Entities\TableEntity;
 use ZnLib\Db\Facades\DbFacade;
 use ZnLib\Db\Factories\ManagerFactory;
 use ZnLib\Fixture\Domain\Repositories\DbRepository;
-use ZnLib\Db\Repositories\Eloquent\SchemaRepository;
+use ZnDatabase\Base\Domain\Repositories\Eloquent\SchemaRepository;
 use ZnSandbox\Sandbox\Office\Domain\Libs\Zip;
 
 class DumpCreateCommand extends Command
