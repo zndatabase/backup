@@ -12,7 +12,7 @@ use ZnCore\Base\Legacy\Yii\Helpers\FileHelper;
 use ZnCore\Base\Libs\DotEnv\DotEnv;
 use ZnDatabase\Base\Domain\Entities\TableEntity;
 use ZnLib\Db\Facades\DbFacade;
-use ZnLib\Db\Factories\ManagerFactory;
+use ZnDatabase\Eloquent\Domain\Factories\ManagerFactory;
 use ZnLib\Fixture\Domain\Repositories\DbRepository;
 use ZnDatabase\Base\Domain\Repositories\Eloquent\SchemaRepository;
 use ZnSandbox\Sandbox\Office\Domain\Libs\Zip;
