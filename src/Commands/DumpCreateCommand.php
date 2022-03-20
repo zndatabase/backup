@@ -10,6 +10,7 @@ use Symfony\Component\Console\Question\Question;
 use ZnCore\Base\Helpers\StringHelper;
 use ZnCore\Base\Legacy\Yii\Helpers\FileHelper;
 use ZnCore\Base\Libs\DotEnv\DotEnv;
+use ZnCore\Base\Libs\Store\Store;
 use ZnDatabase\Base\Domain\Entities\TableEntity;
 use ZnDatabase\Base\Domain\Facades\DbFacade;
 use ZnDatabase\Eloquent\Domain\Factories\ManagerFactory;
@@ -24,6 +25,7 @@ class DumpCreateCommand extends Command
     private $schemaRepository;
     private $dbRepository;
     private $currentDumpPath;
+    private $format = 'json';
 
     public function __construct(?string $name = null, SchemaRepository $schemaRepository, DbRepository $dbRepository)
     {
@@ -125,8 +127,13 @@ class DumpCreateCommand extends Command
             $queryBuilder->forPage($page, $perPage);
             $data = $queryBuilder->get()->toArray();
             if (!empty($data)) {
-                $file = StringHelper::fill($page, 11, '0', 'before') . '.json';
-                $jsonData = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+                $file = StringHelper::fill($page, 11, '0', 'before') . '.' . $this->format;
+
+                $ext = FileHelper::fileExt($file);
+                $store = new Store($ext);
+                $jsonData = $store->encode($data);
+                
+//                $jsonData = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
                 $zip->writeFile($file, $jsonData);
 //                            $dumpFile = $tablePath . '/' . $file;
 //                            FileHelper::save($dumpFile, $tableData);

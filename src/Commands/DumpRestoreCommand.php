@@ -6,23 +6,26 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\Question;
-use ZnCore\Base\Helpers\StringHelper;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 use ZnCore\Base\Legacy\Yii\Helpers\ArrayHelper;
 use ZnCore\Base\Legacy\Yii\Helpers\FileHelper;
 use ZnCore\Base\Libs\App\Helpers\ContainerHelper;
 use ZnCore\Base\Libs\DotEnv\DotEnv;
+use ZnCore\Base\Libs\Store\Store;
 use ZnCore\Domain\Helpers\EntityHelper;
-use ZnLib\Console\Symfony4\Question\ChoiceQuestion;
-use ZnDatabase\Base\Domain\Facades\DbFacade;
-use ZnDatabase\Eloquent\Domain\Factories\ManagerFactory;
+use ZnDatabase\Base\Console\Traits\OverwriteDatabaseTrait;
 use ZnDatabase\Base\Domain\Libs\Dependency;
-use ZnDatabase\Fixture\Domain\Repositories\DbRepository;
 use ZnDatabase\Base\Domain\Repositories\Eloquent\SchemaRepository;
+use ZnDatabase\Eloquent\Domain\Factories\ManagerFactory;
+use ZnDatabase\Fixture\Domain\Repositories\DbRepository;
+use ZnLib\Console\Symfony4\Question\ChoiceQuestion;
 use ZnSandbox\Sandbox\Office\Domain\Libs\Zip;
 
 class DumpRestoreCommand extends Command
 {
+    
+    use OverwriteDatabaseTrait;
+    
     protected static $defaultName = 'db:database:dump-restore';
     private $capsule;
     private $schemaRepository;
@@ -30,7 +33,11 @@ class DumpRestoreCommand extends Command
     private $currentDumpPath;
     private $dumpPath;
 
-    public function __construct(?string $name = null, SchemaRepository $schemaRepository, DbRepository $dbRepository)
+    public function __construct(
+        ?string $name = null,
+        SchemaRepository $schemaRepository,
+        DbRepository $dbRepository
+    )
     {
         $this->capsule = ManagerFactory::createManagerFromEnv();
         $this->schemaRepository = $schemaRepository;
@@ -101,7 +108,10 @@ class DumpRestoreCommand extends Command
         $queryBuilder = $this->dbRepository->getQueryBuilderByTableName($table);
         foreach ($zip->files() as $file) {
             $jsonData = $zip->readFile($file);
-            $data = json_decode($jsonData, JSON_OBJECT_AS_ARRAY);
+            $ext = FileHelper::fileExt($file);
+            $store = new Store($ext);
+            $data = $store->decode($jsonData);
+//            $data = json_decode($jsonData, JSON_OBJECT_AS_ARRAY);
             $queryBuilder->insert($data);
             $result = $result + count($data);
         }
@@ -112,6 +122,10 @@ class DumpRestoreCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln(['<fg=white># Dump restore</>']);
+
+        if (!$this->isContinue($input, $output)) {
+            return 0;
+        }
 
         $this->dumpPath = DotEnv::get('ROOT_DIRECTORY') . '/' . DotEnv::get('DUMP_DIRECTORY');
         $this->currentDumpPath = $this->dumpPath . '/' . date('Y-m/d/H-i-s');
@@ -163,7 +177,7 @@ class DumpRestoreCommand extends Command
         $total = [];
         foreach ($tableQueue as $tableName) {
             $output->write($tableName . ' ... ');
-            $count = $this->one($selectedVesrion, /*'public.' . */$tableName);
+            $count = $this->one($selectedVesrion, /*'public.' . */ $tableName);
             $output->writeln('(' . $count . ') <fg=green>OK</>');
             $total[$tableName] = $count;
         }
@@ -173,8 +187,8 @@ class DumpRestoreCommand extends Command
         $output->writeln('');
         $output->writeln('<fg=green>Dump restore success!</>');
         $output->writeln('');
-        $output->writeln('<fg=white>Total tables: '.count($tables).'</>');
-        $output->writeln('<fg=white>Total rows: '.array_sum($total).'</>');
+        $output->writeln('<fg=white>Total tables: ' . count($tables) . '</>');
+        $output->writeln('<fg=white>Total rows: ' . array_sum($total) . '</>');
 
         return 0;
     }
