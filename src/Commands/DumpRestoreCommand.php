@@ -13,6 +13,11 @@ use ZnCore\Base\Libs\App\Helpers\ContainerHelper;
 use ZnCore\Base\Libs\DotEnv\DotEnv;
 use ZnCore\Base\Libs\Store\Store;
 use ZnCore\Domain\Helpers\EntityHelper;
+use ZnCore\Domain\Libs\Query;
+use ZnDatabase\Backup\Domain\Entities\DumpEntity;
+use ZnDatabase\Backup\Domain\Interfaces\Services\DumpServiceInterface;
+use ZnDatabase\Backup\Domain\Libs\DbStorage;
+use ZnDatabase\Backup\Domain\Libs\ZipStorage;
 use ZnDatabase\Base\Console\Traits\OverwriteDatabaseTrait;
 use ZnDatabase\Base\Domain\Libs\Dependency;
 use ZnDatabase\Base\Domain\Repositories\Eloquent\SchemaRepository;
@@ -32,16 +37,19 @@ class DumpRestoreCommand extends Command
     private $dbRepository;
     private $currentDumpPath;
     private $dumpPath;
+    private $dumpService;
 
     public function __construct(
         ?string $name = null,
         SchemaRepository $schemaRepository,
-        DbRepository $dbRepository
+        DbRepository $dbRepository,
+        DumpServiceInterface $dumpService
     )
     {
         $this->capsule = ManagerFactory::createManagerFromEnv();
         $this->schemaRepository = $schemaRepository;
         $this->dbRepository = $dbRepository;
+        $this->dumpService = $dumpService;
         parent::__construct($name);
     }
 
@@ -66,8 +74,11 @@ class DumpRestoreCommand extends Command
         return $this->capsule;
     }
 
-    private function getHistory(): array
+    /*private function getHistory(): array
     {
+        return $this->dumpService->all();
+        
+        dd(44);
         $options = [];
 //        $options['only'][] = '*.zip';
         $tree = FileHelper::findFiles($this->dumpPath, $options);
@@ -100,22 +111,43 @@ class DumpRestoreCommand extends Command
         return $zipPath;
     }
 
+    private function insertBatch(string $table, array $data) {
+        $queryBuilder = $this->dbRepository->getQueryBuilderByTableName($table);
+        $queryBuilder->insert($data);
+    }*/
+    
     private function one(string $version, string $table): int
     {
-        $zipPath = $this->getZipPath($version, $table);
-        $zip = new Zip($zipPath);
+//        $zipPath = $this->getZipPath($version, $table);
+//        $zip = new Zip($zipPath);
         $result = 0;
-        $queryBuilder = $this->dbRepository->getQueryBuilderByTableName($table);
-        foreach ($zip->files() as $file) {
-            $jsonData = $zip->readFile($file);
-            $ext = FileHelper::fileExt($file);
-            $store = new Store($ext);
-            $data = $store->decode($jsonData);
-//            $data = json_decode($jsonData, JSON_OBJECT_AS_ARRAY);
-            $queryBuilder->insert($data);
-            $result = $result + count($data);
-        }
-        $this->dbRepository->resetAutoIncrement($table);
+//        $queryBuilder = $this->dbRepository->getQueryBuilderByTableName($table);
+        
+        /** @var DbStorage $dbStorage */
+        $dbStorage = ContainerHelper::getContainer()->get(DbStorage::class);
+        $fileStorage = new ZipStorage($version);
+//        $files = $fileStorage->tableFiles($table);
+        
+        do {
+            $collection = $fileStorage->getNextCollection($table);
+            $dbStorage->insertBatch($table, $collection->toArray());
+            $result = $result + $collection->count();
+        } while(!$collection->isEmpty());
+        
+//        foreach ($files as $file) {
+//            $data = $fileStorage->readFile($table, $file);
+//            /*$jsonData = $zip->readFile($file);
+//            $ext = FileHelper::fileExt($file);
+//            $store = new Store($ext);
+//            $data = $store->decode($jsonData);*/
+////            $data = json_decode($jsonData, JSON_OBJECT_AS_ARRAY);
+//            $dbStorage->insertBatch($table, $data);
+////            $queryBuilder->insert($data);
+//            $result = $result + count($data);
+//        }
+        
+        $dbStorage->close($table);
+        
         return $result;
     }
 
@@ -130,11 +162,14 @@ class DumpRestoreCommand extends Command
         $this->dumpPath = DotEnv::get('ROOT_DIRECTORY') . '/' . DotEnv::get('DUMP_DIRECTORY');
         $this->currentDumpPath = $this->dumpPath . '/' . date('Y-m/d/H-i-s');
 
-        $versions = $this->getHistory();
+        $collection = $this->dumpService->all();
+        $versions = EntityHelper::getColumn($collection, 'name');
+//        dd($versions);
+//        $versions = $this->getHistory();
 
         $output->writeln('');
         $question = new ChoiceQuestion(
-            'Select tables for import',
+            'Select version for restore',
             $versions,
             'a'
         );
@@ -147,7 +182,14 @@ class DumpRestoreCommand extends Command
 
         $output->write('calulate table dependencies ... ');
 
-        $tables = $this->getTables($selectedVesrion);
+        /** @var DumpEntity $dumpEntity */
+        $query = new Query();
+        $query->with(['tables']);
+        $dumpEntity = $this->dumpService->oneById($selectedVesrion, $query);
+//        dd($dumpEntity);
+        $tables = $dumpEntity->getTables();
+        
+//        $tables = $this->getTables($selectedVesrion);
 
         $ignoreTables = [
             'eq_migration',
