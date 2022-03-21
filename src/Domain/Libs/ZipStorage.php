@@ -3,6 +3,7 @@
 namespace ZnDatabase\Backup\Domain\Libs;
 
 use Illuminate\Support\Collection;
+use Illuminate\Support\Enumerable;
 use ZnCore\Base\Helpers\StringHelper;
 use ZnCore\Base\Legacy\Yii\Helpers\FileHelper;
 use ZnCore\Base\Libs\DotEnv\DotEnv;
@@ -14,8 +15,6 @@ class ZipStorage implements StorageInterface
 {
 
     private $capsule;
-    private $schemaRepository;
-    private $dbRepository;
     private $currentDumpPath;
     private $dumpPath;
     private $version;
@@ -30,6 +29,11 @@ class ZipStorage implements StorageInterface
         FileHelper::createDirectory($this->currentDumpPath);
     }
 
+    public function tableList(): Enumerable
+    {
+
+    }
+    
     public function getNextCollection(string $table): Collection
     {
         $files = $this->tableFiles($table);
@@ -44,16 +48,11 @@ class ZipStorage implements StorageInterface
 
     public function insertBatch(string $table, array $data): void
     {
-        $tablePath = $this->currentDumpPath . '/' . $table;
-//        dd($tablePath);
-        $zip = new Zip($tablePath . '.zip');
+        $zip = $this->createZipInstance($table);
         $file = StringHelper::fill($this->current, 11, '0', 'before') . '.' . $this->format;
-//dd($file);
         $ext = FileHelper::fileExt($file);
         $store = new Store($ext);
         $jsonData = $store->encode($data);
-
-//                $jsonData = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
         $zip->writeFile($file, $jsonData);
         $this->current++;
         $zip->close();
@@ -61,13 +60,13 @@ class ZipStorage implements StorageInterface
 
     public function close(string $table): void
     {
-
+        $this->current = 0;
     }
 
     public function truncate(string $table): void
     {
-        $tablePath = $this->currentDumpPath . '/' . $table;
-        unlink($tablePath . '.zip');
+        $zipPath = $this->getZipPath($this->version, $table);
+        unlink($zipPath);
     }
 
     private function tableFiles(string $table)

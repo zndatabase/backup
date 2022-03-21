@@ -3,6 +3,7 @@
 namespace ZnDatabase\Backup\Domain\Interfaces\Storages;
 
 use Illuminate\Support\Collection;
+use Illuminate\Support\Enumerable;
 
 interface StorageInterface
 {
@@ -14,4 +15,6 @@ interface StorageInterface
     public function close(string $table): void;
 
     public function truncate(string $table): void;
+
+    public function tableList(): Enumerable;
 }

@@ -32,7 +32,7 @@ class DumpRestoreCommand extends Command
     use OverwriteDatabaseTrait;
     
     protected static $defaultName = 'db:database:dump-restore';
-    private $capsule;
+//    private $capsule;
     private $schemaRepository;
     private $dbRepository;
     private $currentDumpPath;
@@ -46,7 +46,7 @@ class DumpRestoreCommand extends Command
         DumpServiceInterface $dumpService
     )
     {
-        $this->capsule = ManagerFactory::createManagerFromEnv();
+//        $this->capsule = ManagerFactory::createManagerFromEnv();
         $this->schemaRepository = $schemaRepository;
         $this->dbRepository = $dbRepository;
         $this->dumpService = $dumpService;
@@ -97,10 +97,16 @@ class DumpRestoreCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln(['<fg=white># Dump restore</>']);
-
+        
         if (!$this->isContinue($input, $output)) {
             return 0;
         }
+
+
+        /** @var DbStorage $dbStorage */
+        $dbStorage = ContainerHelper::getContainer()->get(DbStorage::class);
+//        $fileStorage = new ZipStorage($version);
+
 
         $this->dumpPath = DotEnv::get('ROOT_DIRECTORY') . '/' . DotEnv::get('DUMP_DIRECTORY');
         $this->currentDumpPath = $this->dumpPath . '/' . date('Y-m/d/H-i-s');
@@ -138,7 +144,7 @@ class DumpRestoreCommand extends Command
             'eq_migration',
         ];
 
-        $tableList = $this->schemaRepository->allTables();
+        $tableList = $dbStorage->tableList();
         $tt = EntityHelper::getColumn($tableList, 'name');
         foreach ($ignoreTables as $ignoreTable) {
             ArrayHelper::removeByValue($ignoreTable, $tt);
@@ -153,7 +159,7 @@ class DumpRestoreCommand extends Command
 
         $output->write('Truncate tables ... ');
         foreach ($tableQueue as $tableName) {
-            $this->dbRepository->truncateData($tableName);
+            $dbStorage->truncate($tableName);
         }
         $output->writeln('<fg=green>OK</>');
 
