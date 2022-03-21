@@ -9,8 +9,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use ZnCore\Base\Helpers\StringHelper;
 use ZnCore\Base\Legacy\Yii\Helpers\FileHelper;
+use ZnCore\Base\Libs\App\Helpers\ContainerHelper;
 use ZnCore\Base\Libs\DotEnv\DotEnv;
 use ZnCore\Base\Libs\Store\Store;
+use ZnCore\Domain\Helpers\EntityHelper;
+use ZnDatabase\Backup\Domain\Libs\DbStorage;
+use ZnDatabase\Backup\Domain\Libs\ZipStorage;
 use ZnDatabase\Base\Domain\Entities\TableEntity;
 use ZnDatabase\Base\Domain\Facades\DbFacade;
 use ZnDatabase\Eloquent\Domain\Factories\ManagerFactory;
@@ -25,6 +29,7 @@ class DumpCreateCommand extends Command
     private $schemaRepository;
     private $dbRepository;
     private $currentDumpPath;
+    private $version;
     private $format = 'json';
 
     public function __construct(?string $name = null, SchemaRepository $schemaRepository, DbRepository $dbRepository)
@@ -58,51 +63,57 @@ class DumpCreateCommand extends Command
 
 //dd($comment);
         
-        $dumpPath = DotEnv::get('ROOT_DIRECTORY') . '/' . DotEnv::get('DUMP_DIRECTORY') . '/' . date('Y-m/d/H-i-s');
+        $version = date('Y-m/d/H-i-s');
         if($comment) {
-            $dumpPath = $dumpPath . '-' . $comment;
+            $version = $version . '-' . $comment;
         }
+        
+        $dumpPath = DotEnv::get('ROOT_DIRECTORY') . '/' . DotEnv::get('DUMP_DIRECTORY') . '/' . $version;
 
         $this->currentDumpPath = $dumpPath;
+        $this->version = $version;
 
         $connections = DbFacade::getConfigFromEnv();
         foreach ($connections as $connectionName => $connection) {
-            $conn = $this->capsule->getConnection($connectionName);
-            $tableList = $this->schemaRepository->allTables();
-            /*$tableList = $conn->select('
-                SELECT *
-                FROM pg_catalog.pg_tables
-                WHERE schemaname != \'pg_catalog\' AND schemaname != \'information_schema\';');*/
-            $tables = [];
-            $schemas = [];
-            foreach ($tableList as $tableEntity) {
-                $tableName = $tableEntity->getName();
-                if ($tableEntity->getSchemaName()) {
-                    $tableName = $tableEntity->getSchemaName() . '.' . $tableName;
-                }
-                $tables[] = $tableName;
-                if ($tableEntity->getSchemaName() && $tableEntity->getSchemaName() != 'public') {
-                    $schemas[] = $tableEntity->getSchemaName();
-                }
-            }
+//            $conn = $this->capsule->getConnection($connectionName);
+//            $tableList = $this->schemaRepository->allTables();
+//            /*$tableList = $conn->select('
+//                SELECT *
+//                FROM pg_catalog.pg_tables
+//                WHERE schemaname != \'pg_catalog\' AND schemaname != \'information_schema\';');*/
+//            $tables = [];
+//            $schemas = [];
+//            foreach ($tableList as $tableEntity) {
+//                $tableName = $tableEntity->getName();
+//                if ($tableEntity->getSchemaName()) {
+//                    $tableName = $tableEntity->getSchemaName() . '.' . $tableName;
+//                }
+//                $tables[] = $tableName;
+//                if ($tableEntity->getSchemaName() && $tableEntity->getSchemaName() != 'public') {
+//                    $schemas[] = $tableEntity->getSchemaName();
+//                }
+//            }
 
             //$currentDumpPath = $_ENV['ROOT_DIRECTORY'] . '/' . $_ENV['DUMP_DIRECTORY'] . '/' . date('Y-m/d/H-i-s');
-            FileHelper::createDirectory($this->currentDumpPath);
+//            FileHelper::createDirectory($this->currentDumpPath);
+
+            /** @var DbStorage $dbStorage */
+            $dbStorage = ContainerHelper::getContainer()->get(DbStorage::class);
+            $fileStorage = new ZipStorage($this->version);
+
+            $tableList = $dbStorage->tableList();
+            $tables = EntityHelper::getColumn($tableList, 'name');
 
             if (empty($tables)) {
                 $output->writeln(['', '<fg=yellow>Not found tables!</>', '']);
             } else {
-
                 // todo: блокировка БД от записи
-
-//                foreach ($tables as $t) {
                 foreach ($tableList as $tableEntity) {
                     $tableName = /*$tableEntity->getSchemaName() . '.' . */$tableEntity->getName();
                     $output->write($tableName . ' ... ');
                     $this->dump($tableName/*, $tableEntity*/);
                     $output->writeln('<fg=green>OK</>');
                 }
-
                 // todo: разблокировка БД от записи
             }
         }
@@ -114,33 +125,17 @@ class DumpCreateCommand extends Command
     }
 
     private function dump(string $tableName/*, TableEntity $tableEntity*/) {
-        $tablePath = $this->currentDumpPath . '/' . $tableName;
-        $zip = new Zip($tablePath . '.zip');
-
-        $page = 1;
-        $perPage = 500;
-        $queryBuilder = $this->dbRepository->getQueryBuilderByTableName($tableName);
-
+        /** @var DbStorage $dbStorage */
+        $dbStorage = ContainerHelper::getContainer()->get(DbStorage::class);
+        $fileStorage = new ZipStorage($this->version);
         // todo: если есть ID или уникальные поля, сортировать по ним
-
         do {
-            $queryBuilder->forPage($page, $perPage);
-            $data = $queryBuilder->get()->toArray();
-            if (!empty($data)) {
-                $file = StringHelper::fill($page, 11, '0', 'before') . '.' . $this->format;
-
-                $ext = FileHelper::fileExt($file);
-                $store = new Store($ext);
-                $jsonData = $store->encode($data);
-                
-//                $jsonData = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-                $zip->writeFile($file, $jsonData);
-//                            $dumpFile = $tablePath . '/' . $file;
-//                            FileHelper::save($dumpFile, $tableData);
+            $collection = $dbStorage->getNextCollection($tableName);
+            if (!$collection->isEmpty()) {
+                $fileStorage->insertBatch($tableName, $collection->toArray());
             }
-            $page++;
-        } while (!empty($data));
-
-        $zip->close();
+        } while (!$collection->isEmpty());
+        $dbStorage->close($tableName);
+        $fileStorage->close($tableName);
     }
 }

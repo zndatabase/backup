@@ -74,59 +74,13 @@ class DumpRestoreCommand extends Command
         return $this->capsule;
     }
 
-    /*private function getHistory(): array
-    {
-        return $this->dumpService->all();
-        
-        dd(44);
-        $options = [];
-//        $options['only'][] = '*.zip';
-        $tree = FileHelper::findFiles($this->dumpPath, $options);
-        foreach ($tree as &$item) {
-            $item = str_replace($this->dumpPath, '', $item);
-            $item = dirname($item);
-            $item = trim($item, '/');
-        }
-        $tree = array_unique($tree);
-        sort($tree);
-        $tree = array_values($tree);
-        return $tree;
-    }
-
-    private function getTables(string $version)
-    {
-        $versionPath = $this->dumpPath . '/' . $version;
-        $files = FileHelper::scanDir($versionPath);
-        $tables = [];
-        foreach ($files as $file) {
-            $tables[] = str_replace('.zip', '', $file);
-        }
-        return $tables;
-    }
-
-    private function getZipPath(string $version, string $table): string
-    {
-        $versionPath = $this->dumpPath . '/' . $version;
-        $zipPath = $versionPath . '/' . $table . '.zip';
-        return $zipPath;
-    }
-
-    private function insertBatch(string $table, array $data) {
-        $queryBuilder = $this->dbRepository->getQueryBuilderByTableName($table);
-        $queryBuilder->insert($data);
-    }*/
-    
     private function one(string $version, string $table): int
     {
-//        $zipPath = $this->getZipPath($version, $table);
-//        $zip = new Zip($zipPath);
         $result = 0;
-//        $queryBuilder = $this->dbRepository->getQueryBuilderByTableName($table);
         
         /** @var DbStorage $dbStorage */
         $dbStorage = ContainerHelper::getContainer()->get(DbStorage::class);
         $fileStorage = new ZipStorage($version);
-//        $files = $fileStorage->tableFiles($table);
         
         do {
             $collection = $fileStorage->getNextCollection($table);
@@ -134,19 +88,8 @@ class DumpRestoreCommand extends Command
             $result = $result + $collection->count();
         } while(!$collection->isEmpty());
         
-//        foreach ($files as $file) {
-//            $data = $fileStorage->readFile($table, $file);
-//            /*$jsonData = $zip->readFile($file);
-//            $ext = FileHelper::fileExt($file);
-//            $store = new Store($ext);
-//            $data = $store->decode($jsonData);*/
-////            $data = json_decode($jsonData, JSON_OBJECT_AS_ARRAY);
-//            $dbStorage->insertBatch($table, $data);
-////            $queryBuilder->insert($data);
-//            $result = $result + count($data);
-//        }
-        
         $dbStorage->close($table);
+        $fileStorage->close($table);
         
         return $result;
     }
