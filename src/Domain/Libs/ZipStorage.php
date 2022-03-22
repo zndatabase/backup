@@ -11,14 +11,12 @@ use ZnCore\Base\Libs\Store\Store;
 use ZnDatabase\Backup\Domain\Interfaces\Storages\StorageInterface;
 use ZnSandbox\Sandbox\Office\Domain\Libs\Zip;
 
-class ZipStorage implements StorageInterface
+class ZipStorage extends BaseStorage implements StorageInterface
 {
 
-    private $capsule;
     private $currentDumpPath;
     private $dumpPath;
     private $version;
-    private $current = 0;
     private $format = 'json';
 
     public function __construct(string $version)
@@ -36,31 +34,33 @@ class ZipStorage implements StorageInterface
     
     public function getNextCollection(string $table): Collection
     {
+        $counter = $this->getCounter();
         $files = $this->tableFiles($table);
-        if (!isset($files[$this->current])) {
+        if (!isset($files[$counter])) {
             return new Collection();
         }
-        $file = $files[$this->current];
-        $this->current++;
+        $file = $files[$counter];
+        $this->incrementCounter();
         $rows = $this->readFile($table, $file);
         return new Collection($rows);
     }
 
     public function insertBatch(string $table, array $data): void
     {
+        $counter = $this->getCounter();
         $zip = $this->createZipInstance($table);
-        $file = StringHelper::fill($this->current, 11, '0', 'before') . '.' . $this->format;
+        $file = StringHelper::fill($counter, 11, '0', 'before') . '.' . $this->format;
         $ext = FileHelper::fileExt($file);
         $store = new Store($ext);
         $jsonData = $store->encode($data);
         $zip->writeFile($file, $jsonData);
-        $this->current++;
+        $this->incrementCounter();
         $zip->close();
     }
 
     public function close(string $table): void
     {
-        $this->current = 0;
+        $this->resetCounter();
     }
 
     public function truncate(string $table): void

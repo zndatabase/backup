@@ -8,12 +8,12 @@ use ZnDatabase\Backup\Domain\Interfaces\Storages\StorageInterface;
 use ZnDatabase\Base\Domain\Repositories\Eloquent\SchemaRepository;
 use ZnDatabase\Fixture\Domain\Repositories\DbRepository;
 
-class DbStorage implements StorageInterface
+class DbStorage extends BaseStorage implements StorageInterface
 {
 
     private $schemaRepository;
     private $dbRepository;
-    private $page = 1;
+    private $perPage = 500;
 
     public function __construct(
         SchemaRepository $schemaRepository,
@@ -22,6 +22,21 @@ class DbStorage implements StorageInterface
     {
         $this->schemaRepository = $schemaRepository;
         $this->dbRepository = $dbRepository;
+    }
+
+    public function getPerPage(): int
+    {
+        return $this->perPage;
+    }
+
+    public function setPerPage(int $perPage): void
+    {
+        $this->perPage = $perPage;
+    }
+
+    protected function getPage(): int
+    {
+        return $this->getCounter() + 1;
     }
 
     public function tableList(): Enumerable
@@ -46,12 +61,11 @@ class DbStorage implements StorageInterface
 
     public function getNextCollection(string $table): Collection
     {
-        $perPage = 500;
         $queryBuilder = $this->dbRepository->getQueryBuilderByTableName($table);
         // todo: если есть ID или уникальные поля, сортировать по ним
-        $queryBuilder->forPage($this->page, $perPage);
+        $queryBuilder->forPage($this->getPage(), $this->getPerPage());
         $data = $queryBuilder->get()->toArray();
-        $this->page++;
+        $this->incrementCounter();
         return new Collection($data);
     }
 
@@ -69,6 +83,6 @@ class DbStorage implements StorageInterface
     public function close(string $table): void
     {
         $this->dbRepository->resetAutoIncrement($table);
-        $this->page = 1;
+        $this->resetCounter();
     }
 }
