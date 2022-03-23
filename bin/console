@@ -12,7 +12,8 @@ DotEnv::init();
 
 $bundles = [
     new \ZnCore\Base\Libs\App\Bundle(['all']),
-    new \ZnLib\Db\Bundle(['container', 'console']),
+    new \ZnDatabase\Base\Bundle(['all']),
+    new \ZnDatabase\Tool\Bundle(['all']),
     new \ZnDatabase\Backup\Bundle(['container', 'console']),
 ];
 $bundles = ArrayHelper::merge($bundles, include __DIR__ . '/../../../../' . DotEnv::get('BUNDLES_CONFIG_FILE'));
