@@ -103,7 +103,7 @@ class DumpRepository implements CrudRepositoryInterface
         if(!empty($data['comment'])) {
             $dumpEntity->setComment($data['comment']);
         }
-        if(in_array('tables', $with)) {
+        if(in_array('tables', $with ?: [])) {
             $dumpEntity->setTables($this->getTables($name));
         }
         return $dumpEntity;
