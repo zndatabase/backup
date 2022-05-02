@@ -2,7 +2,7 @@
 
 namespace ZnDatabase\Backup\Domain\Entities;
 
-use ZnCore\Domain\Interfaces\Entity\EntityIdInterface;
+use ZnCore\Contract\Domain\Interfaces\Entities\EntityIdInterface;
 use DateTime;
 use ZnCore\Domain\Interfaces\Entity\ValidateEntityByMetadataInterface;
 use Symfony\Component\Validator\Constraints as Assert;
