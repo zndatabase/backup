@@ -1,2 +1,3 @@
 #!/bin/sh
-php console db:database:dump-create
+cd ../../../bin
+php zn db:database:dump-create

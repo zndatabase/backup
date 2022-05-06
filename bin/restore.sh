@@ -1,2 +1,3 @@
 #!/bin/sh
-php console db:database:dump-restore
+cd ../../../bin
+php zn db:database:dump-restore
