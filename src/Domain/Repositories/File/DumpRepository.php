@@ -5,7 +5,7 @@ namespace ZnDatabase\Backup\Domain\Repositories\File;
 use Illuminate\Support\Collection;
 use ZnCore\Base\Exceptions\InvalidMethodParameterException;
 use ZnCore\Base\Exceptions\NotFoundException;
-use ZnCore\Base\Helpers\FindFileHelper;
+use ZnCore\Base\Libs\FileSystem\Helpers\FindFileHelper;
 use ZnCore\Base\Legacy\Yii\Helpers\FileHelper;
 use ZnCore\Base\Libs\DotEnv\DotEnv;
 use ZnCore\Domain\Exceptions\UnprocessibleEntityException;
