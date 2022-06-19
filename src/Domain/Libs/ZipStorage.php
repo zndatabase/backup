@@ -4,11 +4,12 @@ namespace ZnDatabase\Backup\Domain\Libs;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Enumerable;
-use ZnCore\Base\Libs\Text\Helpers\StringHelper;
+
 use ZnCore\Base\Legacy\Yii\Helpers\FileHelper;
 use ZnCore\Base\Libs\DotEnv\DotEnv;
 use ZnCore\Base\Libs\FileSystem\Helpers\FilePathHelper;
 use ZnCore\Base\Libs\Store\Store;
+use ZnCore\Base\Libs\Text\Helpers\TextHelper;
 use ZnDatabase\Backup\Domain\Interfaces\Storages\StorageInterface;
 use ZnSandbox\Sandbox\Office\Domain\Libs\Zip;
 
@@ -50,7 +51,7 @@ class ZipStorage extends BaseStorage implements StorageInterface
     {
         $counter = $this->getCounter();
         $zip = $this->createZipInstance($table);
-        $file = StringHelper::fill($counter, 11, '0', 'before') . '.' . $this->format;
+        $file = TextHelper::fill($counter, 11, '0', 'before') . '.' . $this->format;
         $ext = FilePathHelper::fileExt($file);
         $store = new Store($ext);
         $jsonData = $store->encode($data);
