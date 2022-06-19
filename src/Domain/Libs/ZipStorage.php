@@ -4,7 +4,7 @@ namespace ZnDatabase\Backup\Domain\Libs;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Enumerable;
-use ZnCore\Base\Helpers\StringHelper;
+use ZnCore\Base\Libs\Text\Helpers\StringHelper;
 use ZnCore\Base\Legacy\Yii\Helpers\FileHelper;
 use ZnCore\Base\Libs\DotEnv\DotEnv;
 use ZnCore\Base\Libs\FileSystem\Helpers\FilePathHelper;
