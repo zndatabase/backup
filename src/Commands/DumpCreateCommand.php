@@ -12,7 +12,7 @@ use ZnCore\Base\Legacy\Yii\Helpers\FileHelper;
 use ZnCore\Base\Libs\Container\Helpers\ContainerHelper;
 use ZnCore\Base\Libs\DotEnv\DotEnv;
 use ZnCore\Base\Libs\Store\Store;
-use ZnCore\Domain\Helpers\EntityHelper;
+use ZnCore\Base\Libs\Entity\Helpers\EntityHelper;
 use ZnDatabase\Backup\Domain\Libs\DbStorage;
 use ZnDatabase\Backup\Domain\Libs\ZipStorage;
 use ZnDatabase\Base\Domain\Entities\TableEntity;

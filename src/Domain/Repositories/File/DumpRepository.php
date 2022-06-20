@@ -8,12 +8,12 @@ use ZnCore\Base\Exceptions\NotFoundException;
 use ZnCore\Base\Libs\FileSystem\Helpers\FindFileHelper;
 use ZnCore\Base\Legacy\Yii\Helpers\FileHelper;
 use ZnCore\Base\Libs\DotEnv\DotEnv;
-use ZnCore\Domain\Exceptions\UnprocessibleEntityException;
+use ZnCore\Base\Libs\Validation\Exceptions\UnprocessibleEntityException;
 use ZnCore\Contract\Domain\Interfaces\Entities\EntityIdInterface;
-use ZnCore\Domain\Interfaces\Libs\EntityManagerInterface;
+use ZnCore\Base\Libs\EntityManager\Interfaces\EntityManagerInterface;
 use ZnCore\Domain\Interfaces\Repository\CrudRepositoryInterface;
 use ZnCore\Domain\Libs\Query;
-use ZnCore\Domain\Traits\EntityManagerTrait;
+use ZnCore\Base\Libs\EntityManager\Traits\EntityManagerAwareTrait;
 use ZnDatabase\Backup\Domain\Entities\DumpEntity;
 use ZnDatabase\Base\Domain\Repositories\Eloquent\SchemaRepository;
 use ZnDatabase\Eloquent\Domain\Factories\ManagerFactory;
@@ -22,7 +22,7 @@ use ZnDatabase\Fixture\Domain\Repositories\DbRepository;
 class DumpRepository implements CrudRepositoryInterface
 {
 
-    use EntityManagerTrait;
+    use EntityManagerAwareTrait;
     
     private $capsule;
     private $schemaRepository;
