@@ -11,6 +11,7 @@ use ZnCore\Base\Legacy\Yii\Helpers\ArrayHelper;
 use ZnCore\Base\Legacy\Yii\Helpers\FileHelper;
 use ZnCore\Base\Libs\Container\Helpers\ContainerHelper;
 use ZnCore\Base\Libs\DotEnv\DotEnv;
+use ZnCore\Base\Libs\Entity\Helpers\CollectionHelper;
 use ZnCore\Base\Libs\Store\Store;
 use ZnCore\Base\Libs\Entity\Helpers\EntityHelper;
 use ZnCore\Base\Libs\Query\Entities\Query;
@@ -112,7 +113,7 @@ class DumpRestoreCommand extends Command
         $this->currentDumpPath = $this->dumpPath . '/' . date('Y-m/d/H-i-s');
 
         $collection = $this->dumpService->all();
-        $versions = EntityHelper::getColumn($collection, 'name');
+        $versions = CollectionHelper::getColumn($collection, 'name');
 //        dd($versions);
 //        $versions = $this->getHistory();
 
@@ -145,7 +146,7 @@ class DumpRestoreCommand extends Command
         ];
 
         $tableList = $dbStorage->tableList();
-        $tt = EntityHelper::getColumn($tableList, 'name');
+        $tt = CollectionHelper::getColumn($tableList, 'name');
         foreach ($ignoreTables as $ignoreTable) {
             ArrayHelper::removeByValue($ignoreTable, $tt);
         }

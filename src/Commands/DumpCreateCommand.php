@@ -11,6 +11,7 @@ use Symfony\Component\Console\Question\Question;
 use ZnCore\Base\Legacy\Yii\Helpers\FileHelper;
 use ZnCore\Base\Libs\Container\Helpers\ContainerHelper;
 use ZnCore\Base\Libs\DotEnv\DotEnv;
+use ZnCore\Base\Libs\Entity\Helpers\CollectionHelper;
 use ZnCore\Base\Libs\Store\Store;
 use ZnCore\Base\Libs\Entity\Helpers\EntityHelper;
 use ZnDatabase\Backup\Domain\Libs\DbStorage;
@@ -102,7 +103,7 @@ class DumpCreateCommand extends Command
             $fileStorage = new ZipStorage($this->version);
 
             $tableList = $dbStorage->tableList();
-            $tables = EntityHelper::getColumn($tableList, 'name');
+            $tables = CollectionHelper::getColumn($tableList, 'name');
 
             if (empty($tables)) {
                 $output->writeln(['', '<fg=yellow>Not found tables!</>', '']);
