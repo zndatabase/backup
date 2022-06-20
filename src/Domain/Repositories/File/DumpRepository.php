@@ -11,7 +11,7 @@ use ZnCore\Base\Libs\DotEnv\DotEnv;
 use ZnCore\Base\Libs\Validation\Exceptions\UnprocessibleEntityException;
 use ZnCore\Contract\Domain\Interfaces\Entities\EntityIdInterface;
 use ZnCore\Base\Libs\EntityManager\Interfaces\EntityManagerInterface;
-use ZnCore\Domain\Interfaces\Repository\CrudRepositoryInterface;
+use ZnCore\Base\Libs\Repository\Interfaces\CrudRepositoryInterface;
 use ZnCore\Base\Libs\Query\Entities\Query;
 use ZnCore\Base\Libs\EntityManager\Traits\EntityManagerAwareTrait;
 use ZnDatabase\Backup\Domain\Entities\DumpEntity;
