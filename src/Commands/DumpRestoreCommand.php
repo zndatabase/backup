@@ -13,7 +13,7 @@ use ZnCore\Base\Libs\Container\Helpers\ContainerHelper;
 use ZnCore\Base\Libs\DotEnv\DotEnv;
 use ZnCore\Base\Libs\Store\Store;
 use ZnCore\Base\Libs\Entity\Helpers\EntityHelper;
-use ZnCore\Domain\Libs\Query;
+use ZnCore\Base\Libs\Query\Entities\Query;
 use ZnDatabase\Backup\Domain\Entities\DumpEntity;
 use ZnDatabase\Backup\Domain\Interfaces\Services\DumpServiceInterface;
 use ZnDatabase\Backup\Domain\Libs\DbStorage;
