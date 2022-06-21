@@ -3,6 +3,7 @@
 namespace ZnDatabase\Backup\Domain\Repositories\File;
 
 use Illuminate\Support\Collection;
+use Illuminate\Support\Enumerable;
 use ZnCore\Base\Exceptions\InvalidMethodParameterException;
 use ZnCore\Base\Exceptions\NotFoundException;
 use ZnCore\Base\Libs\FileSystem\Helpers\FindFileHelper;
@@ -126,7 +127,7 @@ class DumpRepository implements CrudRepositoryInterface
         return $tree;
     }
     
-    public function all(Query $query = null)
+    public function all(Query $query = null): Enumerable
     {
         $tree = $this->getTree();
         $collection = new Collection();
