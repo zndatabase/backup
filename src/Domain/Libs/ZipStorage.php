@@ -6,7 +6,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Enumerable;
 
 use ZnCore\Base\Legacy\Yii\Helpers\FileHelper;
-use ZnCore\Base\Libs\DotEnv\DotEnv;
+use ZnCore\Base\Libs\DotEnv\Domain\Libs\DotEnv;
 use ZnCore\Base\Libs\FileSystem\Helpers\FilePathHelper;
 use ZnCore\Base\Libs\Store\Store;
 use ZnCore\Base\Libs\Text\Helpers\TextHelper;
