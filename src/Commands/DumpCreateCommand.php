@@ -7,21 +7,15 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
-
-use ZnCore\Base\Legacy\Yii\Helpers\FileHelper;
 use ZnCore\Base\Libs\Container\Helpers\ContainerHelper;
 use ZnCore\Base\Libs\DotEnv\Domain\Libs\DotEnv;
 use ZnCore\Domain\Entity\Helpers\CollectionHelper;
-use ZnCore\Base\Libs\Store\Store;
-use ZnCore\Domain\Entity\Helpers\EntityHelper;
 use ZnDatabase\Backup\Domain\Libs\DbStorage;
 use ZnDatabase\Backup\Domain\Libs\ZipStorage;
-use ZnDatabase\Base\Domain\Entities\TableEntity;
 use ZnDatabase\Base\Domain\Facades\DbFacade;
+use ZnDatabase\Base\Domain\Repositories\Eloquent\SchemaRepository;
 use ZnDatabase\Eloquent\Domain\Factories\ManagerFactory;
 use ZnDatabase\Fixture\Domain\Repositories\DbRepository;
-use ZnDatabase\Base\Domain\Repositories\Eloquent\SchemaRepository;
-use ZnSandbox\Sandbox\Office\Domain\Libs\Zip;
 
 class DumpCreateCommand extends Command
 {
@@ -63,12 +57,12 @@ class DumpCreateCommand extends Command
         $comment = $this->getHelper('question')->ask($input, $output, $question);
 
 //dd($comment);
-        
+
         $version = date('Y-m/d/H-i-s');
-        if($comment) {
+        if ($comment) {
             $version = $version . '-' . $comment;
         }
-        
+
         $dumpPath = DotEnv::get('ROOT_DIRECTORY') . '/' . DotEnv::get('DUMP_DIRECTORY') . '/' . $version;
 
         $this->currentDumpPath = $dumpPath;
@@ -110,7 +104,8 @@ class DumpCreateCommand extends Command
             } else {
                 // todo: блокировка БД от записи
                 foreach ($tableList as $tableEntity) {
-                    $tableName = /*$tableEntity->getSchemaName() . '.' . */$tableEntity->getName();
+                    $tableName = /*$tableEntity->getSchemaName() . '.' . */
+                        $tableEntity->getName();
                     $output->write($tableName . ' ... ');
                     $this->dump($tableName/*, $tableEntity*/);
                     $output->writeln('<fg=green>OK</>');
@@ -125,7 +120,8 @@ class DumpCreateCommand extends Command
         return 0;
     }
 
-    private function dump(string $tableName/*, TableEntity $tableEntity*/) {
+    private function dump(string $tableName/*, TableEntity $tableEntity*/)
+    {
         /** @var DbStorage $dbStorage */
         $dbStorage = ContainerHelper::getContainer()->get(DbStorage::class);
         $fileStorage = new ZipStorage($this->version);

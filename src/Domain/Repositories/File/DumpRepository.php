@@ -4,10 +4,10 @@ namespace ZnDatabase\Backup\Domain\Repositories\File;
 
 use Illuminate\Support\Collection;
 use Illuminate\Support\Enumerable;
-use ZnCore\Base\Exceptions\InvalidMethodParameterException;
+use ZnCore\Contract\Common\Exceptions\InvalidMethodParameterException;
 use ZnCore\Domain\Entity\Exceptions\NotFoundException;
 use ZnCore\Base\Libs\FileSystem\Helpers\FindFileHelper;
-use ZnCore\Base\Legacy\Yii\Helpers\FileHelper;
+use ZnCore\Base\Libs\FileSystem\Helpers\FileHelper;
 use ZnCore\Base\Libs\DotEnv\Domain\Libs\DotEnv;
 use ZnCore\Base\Libs\Validation\Exceptions\UnprocessibleEntityException;
 use ZnCore\Domain\Entity\Interfaces\EntityIdInterface;

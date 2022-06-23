@@ -6,14 +6,10 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\ConfirmationQuestion;
-use ZnCore\Base\Legacy\Yii\Helpers\ArrayHelper;
-use ZnCore\Base\Legacy\Yii\Helpers\FileHelper;
+use ZnCore\Base\Libs\Arr\Helpers\ArrayHelper;
 use ZnCore\Base\Libs\Container\Helpers\ContainerHelper;
 use ZnCore\Base\Libs\DotEnv\Domain\Libs\DotEnv;
 use ZnCore\Domain\Entity\Helpers\CollectionHelper;
-use ZnCore\Base\Libs\Store\Store;
-use ZnCore\Domain\Entity\Helpers\EntityHelper;
 use ZnCore\Domain\Query\Entities\Query;
 use ZnDatabase\Backup\Domain\Entities\DumpEntity;
 use ZnDatabase\Backup\Domain\Interfaces\Services\DumpServiceInterface;
@@ -22,16 +18,14 @@ use ZnDatabase\Backup\Domain\Libs\ZipStorage;
 use ZnDatabase\Base\Console\Traits\OverwriteDatabaseTrait;
 use ZnDatabase\Base\Domain\Libs\Dependency;
 use ZnDatabase\Base\Domain\Repositories\Eloquent\SchemaRepository;
-use ZnDatabase\Eloquent\Domain\Factories\ManagerFactory;
 use ZnDatabase\Fixture\Domain\Repositories\DbRepository;
 use ZnLib\Console\Symfony4\Question\ChoiceQuestion;
-use ZnSandbox\Sandbox\Office\Domain\Libs\Zip;
 
 class DumpRestoreCommand extends Command
 {
-    
+
     use OverwriteDatabaseTrait;
-    
+
     protected static $defaultName = 'db:database:dump-restore';
 //    private $capsule;
     private $schemaRepository;
@@ -78,27 +72,27 @@ class DumpRestoreCommand extends Command
     private function one(string $version, string $table): int
     {
         $result = 0;
-        
+
         /** @var DbStorage $dbStorage */
         $dbStorage = ContainerHelper::getContainer()->get(DbStorage::class);
         $fileStorage = new ZipStorage($version);
-        
+
         do {
             $collection = $fileStorage->getNextCollection($table);
             $dbStorage->insertBatch($table, $collection->toArray());
             $result = $result + $collection->count();
-        } while(!$collection->isEmpty());
-        
+        } while (!$collection->isEmpty());
+
         $dbStorage->close($table);
         $fileStorage->close($table);
-        
+
         return $result;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln(['<fg=white># Dump restore</>']);
-        
+
         if (!$this->isContinue($input, $output)) {
             return 0;
         }
@@ -138,7 +132,7 @@ class DumpRestoreCommand extends Command
         $dumpEntity = $this->dumpService->oneById($selectedVesrion, $query);
 //        dd($dumpEntity);
         $tables = $dumpEntity->getTables();
-        
+
 //        $tables = $this->getTables($selectedVesrion);
 
         $ignoreTables = [
