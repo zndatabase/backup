@@ -8,7 +8,7 @@ use Illuminate\Support\Enumerable;
 use ZnCore\Base\FileSystem\Helpers\FileHelper;
 use ZnCore\Base\DotEnv\Domain\Libs\DotEnv;
 use ZnCore\Base\FileSystem\Helpers\FilePathHelper;
-use ZnCore\Base\Store\Store;
+use ZnLib\Components\Store\Store;
 use ZnCore\Base\Text\Helpers\TextHelper;
 use ZnDatabase\Backup\Domain\Interfaces\Storages\StorageInterface;
 use ZnSandbox\Sandbox\Office\Domain\Libs\Zip;
