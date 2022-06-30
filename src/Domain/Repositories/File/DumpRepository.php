@@ -144,7 +144,7 @@ class DumpRepository implements CrudRepositoryInterface
         return count($tree);
     }
 
-    public function oneById($id, Query $query = null): EntityIdInterface
+    public function findOneById($id, Query $query = null): EntityIdInterface
     {
         $dumpEntity = $this->forgeEntityFromName($id, $query->getWith());
         return $dumpEntity;
