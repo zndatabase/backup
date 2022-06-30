@@ -106,7 +106,7 @@ class DumpRestoreCommand extends Command
         $this->dumpPath = DotEnv::get('ROOT_DIRECTORY') . '/' . DotEnv::get('DUMP_DIRECTORY');
         $this->currentDumpPath = $this->dumpPath . '/' . date('Y-m/d/H-i-s');
 
-        $collection = $this->dumpService->all();
+        $collection = $this->dumpService->findAll();
         $versions = CollectionHelper::getColumn($collection, 'name');
 //        dd($versions);
 //        $versions = $this->getHistory();
@@ -129,7 +129,7 @@ class DumpRestoreCommand extends Command
         /** @var DumpEntity $dumpEntity */
         $query = new Query();
         $query->with(['tables']);
-        $dumpEntity = $this->dumpService->oneById($selectedVesrion, $query);
+        $dumpEntity = $this->dumpService->findOneById($selectedVesrion, $query);
 //        dd($dumpEntity);
         $tables = $dumpEntity->getTables();
 

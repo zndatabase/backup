@@ -127,7 +127,7 @@ class DumpRepository implements CrudRepositoryInterface
         return $tree;
     }
     
-    public function all(Query $query = null): Enumerable
+    public function findAll(Query $query = null): Enumerable
     {
         $tree = $this->getTree();
         $collection = new Collection();
