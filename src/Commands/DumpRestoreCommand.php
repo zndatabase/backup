@@ -163,7 +163,7 @@ class DumpRestoreCommand extends Command
         $total = [];
         foreach ($tableQueue as $tableName) {
             $output->write($tableName . ' ... ');
-            $count = $this->one($selectedVesrion, /*'public.' . */ $tableName);
+            $count = $this->findOne($selectedVesrion, /*'public.' . */ $tableName);
             $output->writeln('(' . $count . ') <fg=green>OK</>');
             $total[$tableName] = $count;
         }
