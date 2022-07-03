@@ -2,8 +2,8 @@
 
 namespace ZnDatabase\Backup\Domain\Interfaces\Storages;
 
-use Illuminate\Support\Collection;
-use Illuminate\Support\Enumerable;
+use ZnCore\Domain\Collection\Libs\Collection;
+use ZnCore\Domain\Collection\Interfaces\Enumerable;
 
 interface StorageInterface
 {

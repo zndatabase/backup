@@ -2,8 +2,8 @@
 
 namespace ZnDatabase\Backup\Domain\Libs;
 
-use Illuminate\Support\Collection;
-use Illuminate\Support\Enumerable;
+use ZnCore\Domain\Collection\Libs\Collection;
+use ZnCore\Domain\Collection\Interfaces\Enumerable;
 use ZnCore\Base\DotEnv\Domain\Libs\DotEnv;
 use ZnCore\Base\FileSystem\Helpers\FileHelper;
 use ZnCore\Base\FileSystem\Helpers\FilePathHelper;
