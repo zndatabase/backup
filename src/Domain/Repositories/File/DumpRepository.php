@@ -2,19 +2,16 @@
 
 namespace ZnDatabase\Backup\Domain\Repositories\File;
 
-use ZnCore\Domain\Collection\Libs\Collection;
-use ZnCore\Domain\Collection\Interfaces\Enumerable;
-use ZnCore\Contract\Common\Exceptions\InvalidMethodParameterException;
-use ZnCore\Domain\Entity\Exceptions\NotFoundException;
-use ZnCore\Base\FileSystem\Helpers\FindFileHelper;
-use ZnCore\Base\FileSystem\Helpers\FileHelper;
 use ZnCore\Base\DotEnv\Domain\Libs\DotEnv;
-use ZnCore\Base\Validation\Exceptions\UnprocessibleEntityException;
+use ZnCore\Base\FileSystem\Helpers\FileHelper;
+use ZnCore\Base\FileSystem\Helpers\FindFileHelper;
+use ZnCore\Domain\Collection\Interfaces\Enumerable;
+use ZnCore\Domain\Collection\Libs\Collection;
 use ZnCore\Domain\Entity\Interfaces\EntityIdInterface;
 use ZnCore\Domain\EntityManager\Interfaces\EntityManagerInterface;
-use ZnCore\Domain\Repository\Interfaces\CrudRepositoryInterface;
-use ZnCore\Domain\Query\Entities\Query;
 use ZnCore\Domain\EntityManager\Traits\EntityManagerAwareTrait;
+use ZnCore\Domain\Query\Entities\Query;
+use ZnCore\Domain\Repository\Interfaces\CrudRepositoryInterface;
 use ZnDatabase\Backup\Domain\Entities\DumpEntity;
 use ZnDatabase\Base\Domain\Repositories\Eloquent\SchemaRepository;
 use ZnDatabase\Eloquent\Domain\Factories\ManagerFactory;
@@ -24,7 +21,7 @@ class DumpRepository implements CrudRepositoryInterface
 {
 
     use EntityManagerAwareTrait;
-    
+
     private $capsule;
     private $schemaRepository;
     private $dbRepository;
@@ -45,8 +42,8 @@ class DumpRepository implements CrudRepositoryInterface
         $this->dumpPath = DotEnv::get('ROOT_DIRECTORY') . '/' . DotEnv::get('DUMP_DIRECTORY');
         $this->currentDumpPath = $this->dumpPath . '/' . date('Y-m/d/H-i-s');
     }
-    
-    public function getEntityClass() : string
+
+    public function getEntityClass(): string
     {
         return DumpEntity::class;
     }
@@ -71,7 +68,8 @@ class DumpRepository implements CrudRepositoryInterface
         // TODO: Implement deleteByCondition() method.
     }
 
-    private function parse(string $item) {
+    private function parse(string $item)
+    {
         preg_match('/((\d{4}).+(\d{2}).+(\d{2}).+(\d{2}).+(\d{2}).+(\d{2}))(-?.*)/i', $item, $matches);
 //        dd($matches);
         $data['name'] = $matches[0];
@@ -92,8 +90,9 @@ class DumpRepository implements CrudRepositoryInterface
         $data['id'] = $data['createdAt']->getTimestamp();
         return $data;
     }
-    
-    private function forgeEntityFromName(string $name, ?array $with = []): DumpEntity {
+
+    private function forgeEntityFromName(string $name, ?array $with = []): DumpEntity
+    {
         $data = $this->parse($name);
         /** @var DumpEntity $dumpEntity */
         $dumpEntity = $this->getEntityManager()->createEntity(DumpEntity::class);
@@ -102,16 +101,17 @@ class DumpRepository implements CrudRepositoryInterface
         $dumpEntity->setVersion($data['version']);
         $dumpEntity->setPath($this->dumpPath . '/' . $name);
         $dumpEntity->setCreatedAt($data['createdAt']);
-        if(!empty($data['comment'])) {
+        if (!empty($data['comment'])) {
             $dumpEntity->setComment($data['comment']);
         }
-        if(in_array('tables', $with ?: [])) {
+        if (in_array('tables', $with ?: [])) {
             $dumpEntity->setTables($this->getTables($name));
         }
         return $dumpEntity;
     }
-    
-    private function getTree(): array {
+
+    private function getTree(): array
+    {
         $options = [];
 //        $options['only'][] = '*.zip';
         $tree = FileHelper::findFiles($this->dumpPath, $options);
@@ -126,7 +126,7 @@ class DumpRepository implements CrudRepositoryInterface
         $tree = array_values($tree);
         return $tree;
     }
-    
+
     public function findAll(Query $query = null): Enumerable
     {
         $tree = $this->getTree();
