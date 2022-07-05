@@ -8,7 +8,7 @@ use ZnCore\Domain\Collection\Interfaces\Enumerable;
 interface StorageInterface
 {
 
-    public function getNextCollection(string $table): Collection;
+    public function getNextCollection(string $table): Enumerable;
 
     public function insertBatch(string $table, array $data): void;
 

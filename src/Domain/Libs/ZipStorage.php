@@ -33,7 +33,7 @@ class ZipStorage extends BaseStorage implements StorageInterface
 
     }
 
-    public function getNextCollection(string $table): Collection
+    public function getNextCollection(string $table): Enumerable
     {
         $counter = $this->getCounter();
         $files = $this->tableFiles($table);

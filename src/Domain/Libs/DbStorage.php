@@ -59,7 +59,7 @@ class DbStorage extends BaseStorage implements StorageInterface
         return $tables;*/
     }
 
-    public function getNextCollection(string $table): Collection
+    public function getNextCollection(string $table): Enumerable
     {
         $queryBuilder = $this->dbRepository->getQueryBuilderByTableName($table);
         // todo: если есть ID или уникальные поля, сортировать по ним
