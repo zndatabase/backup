@@ -2,8 +2,8 @@
 
 namespace ZnDatabase\Backup\Domain\Libs;
 
-use ZnCore\Domain\Collection\Interfaces\Enumerable;
-use ZnCore\Domain\Collection\Libs\Collection;
+use ZnCore\Collection\Interfaces\Enumerable;
+use ZnCore\Collection\Libs\Collection;
 use ZnDatabase\Backup\Domain\Interfaces\Storages\StorageInterface;
 use ZnDatabase\Base\Domain\Repositories\Eloquent\SchemaRepository;
 use ZnDatabase\Fixture\Domain\Repositories\DbRepository;

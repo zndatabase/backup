@@ -5,7 +5,7 @@ namespace ZnDatabase\Backup\Domain\Services;
 use ZnDatabase\Backup\Domain\Interfaces\Services\DumpServiceInterface;
 use ZnDatabase\Backup\Domain\Interfaces\Repositories\DumpRepositoryInterface;
 use ZnCore\Domain\Service\Base\BaseCrudService;
-use ZnCore\Domain\EntityManager\Interfaces\EntityManagerInterface;
+use ZnCore\EntityManager\Interfaces\EntityManagerInterface;
 use ZnDatabase\Backup\Domain\Entities\DumpEntity;
 
 /**
