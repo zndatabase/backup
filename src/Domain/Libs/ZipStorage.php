@@ -23,7 +23,7 @@ class ZipStorage extends BaseStorage implements StorageInterface
     public function __construct(string $version)
     {
         $this->version = $version;
-        $this->dumpPath = DotEnv::get('ROOT_DIRECTORY') . '/' . DotEnv::get('DUMP_DIRECTORY');
+        $this->dumpPath = DotEnv::get('DUMP_DIRECTORY');
         $this->currentDumpPath = $this->dumpPath . '/' . $version;
         FileHelper::createDirectory($this->currentDumpPath);
     }

@@ -63,7 +63,7 @@ class DumpCreateCommand extends Command
             $version = $version . '-' . $comment;
         }
 
-        $dumpPath = DotEnv::get('ROOT_DIRECTORY') . '/' . DotEnv::get('DUMP_DIRECTORY') . '/' . $version;
+        $dumpPath = DotEnv::get('DUMP_DIRECTORY') . '/' . $version;
 
         $this->currentDumpPath = $dumpPath;
         $this->version = $version;

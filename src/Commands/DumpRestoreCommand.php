@@ -103,7 +103,7 @@ class DumpRestoreCommand extends Command
 //        $fileStorage = new ZipStorage($version);
 
 
-        $this->dumpPath = DotEnv::get('ROOT_DIRECTORY') . '/' . DotEnv::get('DUMP_DIRECTORY');
+        $this->dumpPath = DotEnv::get('DUMP_DIRECTORY');
         $this->currentDumpPath = $this->dumpPath . '/' . date('Y-m/d/H-i-s');
 
         $collection = $this->dumpService->findAll();
