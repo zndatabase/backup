@@ -2,7 +2,7 @@
 
 namespace ZnDatabase\Backup\Domain\Interfaces\Services;
 
-use ZnCore\Service\Interfaces\CrudServiceInterface;
+use ZnDomain\Service\Interfaces\CrudServiceInterface;
 
 interface DumpServiceInterface extends CrudServiceInterface
 {
