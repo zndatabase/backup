@@ -9,7 +9,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use ZnCore\Container\Helpers\ContainerHelper;
 use ZnCore\DotEnv\Domain\Libs\DotEnv;
-use ZnCore\Entity\Helpers\CollectionHelper;
+use ZnDomain\Entity\Helpers\CollectionHelper;
 use ZnDatabase\Backup\Domain\Libs\DbStorage;
 use ZnDatabase\Backup\Domain\Libs\ZipStorage;
 use ZnDatabase\Base\Domain\Facades\DbFacade;
