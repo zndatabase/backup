@@ -9,7 +9,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use ZnCore\Arr\Helpers\ArrayHelper;
 use ZnCore\Container\Helpers\ContainerHelper;
 use ZnCore\DotEnv\Domain\Libs\DotEnv;
-use ZnDomain\Entity\Helpers\CollectionHelper;
+use ZnCore\Collection\Helpers\CollectionHelper;
 use ZnDomain\Query\Entities\Query;
 use ZnDatabase\Backup\Domain\Entities\DumpEntity;
 use ZnDatabase\Backup\Domain\Interfaces\Services\DumpServiceInterface;
